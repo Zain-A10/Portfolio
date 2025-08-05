@@ -7,8 +7,6 @@ Feel free to connect with me:
 - Email: Arif.zain13@outlook.com
 - Phone #: 6479873770
 
-# Professional Statement
-
 ## Who I Am
 I am an aspiring cybersecurity professional with a strong foundation in problem-solving and programming.
 
