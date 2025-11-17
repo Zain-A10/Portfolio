@@ -1,5 +1,2 @@
 # Professional Statement
-I am an aspiring cybersecurity professional with a strong foundation in problem-solving and programming. 
-I am deeply motivated by a commitment to protecting both organizations and individuals, upholding legal and ethical standards, and promoting equitable access to secure digital spaces. 
-I am interested in the technical defense and ethical hacking aspect of cybersecurity. 
-I aim to apply my skills and values to support the evolving security needs of organizations, and I am committed to continuous learning and ethical responsibility as I grow in this field.
+I’m an aspiring security analyst driven by curiosity, continuous learning, and a commitment to protecting people and data. I use my skills in log analysis, threat identification, Linux, networking fundamentals, and Python automation to break down complex security issues and develop practical defensive solutions. Whether analyzing network activity, investigating vulnerabilities, or improving secure design in projects, I focus on understanding how systems fail—and how to make them stronger, safer, and more resilient.
