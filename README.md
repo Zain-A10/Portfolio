@@ -8,11 +8,11 @@ Feel free to connect with me:
 - Phone #: 6479873770
 
 ## Who I Am
-I am an aspiring cybersecurity professional with a strong foundation in problem-solving and programming.
+I am an aspiring technology professional with a strong foundation in problem-solving and programming.
 
 ## My Strengths
 - Problem-solving and critical thinking
-- Programming (e.g., Python, and SQL)
+- Programming (e.g., Python, Javascript, and SQL)
 - Clear communication and documentation
 - Curiosity and a growth mindset
 
