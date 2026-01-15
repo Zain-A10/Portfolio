@@ -1,0 +1,175 @@
+    /* --- Reset & base --- */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      color: #0f172a;
+    }
+    a { color: inherit; }
+
+    /* --- HEADER --- */
+    header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      background: #2563eb;
+      color: white;
+      padding: 14px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: .5px; }
+    nav { 
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    nav a {
+      color: white; text-decoration: none; font-weight: 500; transition: opacity .2s;
+    }
+    nav a:hover { opacity: .85; }
+    header button {
+      background: white; color: #0f3485; border: none; border-radius: 8px;
+      padding: 8px 16px; font-weight: 600; cursor: pointer; transition: background .2s;
+    }
+    header button:hover { background: #e2e8f0; }
+    nav a.active {
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+
+    /* --- LAYOUT --- */
+    .container { max-width: 1100px; margin: 24px auto 56px; padding: 0 16px; }
+    .section { margin: 28px 0; }
+    .section h2 {
+      margin: 0 0 12px; font-size: 1.25rem; color: #0f172a;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section h2::after {
+      content: ""; flex: 1; height: 1px; background: #e2e8f0;
+    }
+
+    /* --- BRANDS STRIP --- */
+    .brands { margin: 28px 0; }
+    .brands h2 {
+      margin: 0 0 12px; font-size: 1.25rem; color: #0f172a;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .brands h2::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+    .brand-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(140px, 1fr);
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+    }
+    @media (min-width: 900px) {
+      .brand-row {
+        grid-auto-flow: initial;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        overflow: visible;
+      }
+    }
+    .brand-card {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 10px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 14px rgba(0,0,0,.05); scroll-snap-align: start;
+    }
+    .brand-card img {
+      max-width: 100%; height: 96px; object-fit: contain; filter: grayscale(0.1);
+      transition: filter .2s, transform .2s;
+    }
+    .brand-card img:hover { filter: none; transform: translateY(-1px); }
+
+    /* --- Product row --- */
+    .product-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(180px, 1fr);
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+    }
+    @media (min-width: 900px) {
+      .product-row {
+        grid-auto-flow: initial;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        overflow: visible;
+      }
+    }
+    .product-card {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 12px; box-shadow: 0 3px 14px rgba(0,0,0,.05);
+      scroll-snap-align: start;
+    }
+    .product-card img {
+      width: 100%; aspect-ratio: 1/1; object-fit: contain;
+      background: #f8fafc; border-radius: 10px;
+    }
+    .product-name {
+      margin: 10px 0 6px; font-weight: 600; font-size: .95rem; line-height: 1.2;
+    }
+    .price { font-weight: 700; color: #16a34a; }
+    .sub { color: #64748b; font-size: .85rem; }
+
+    /* --- FOOTER --- */
+    footer {
+      background: #0b1220; color: #e5e7eb; padding: 28px 16px;
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .contact-grid {
+      display: grid; gap: 12px;
+    }
+    @media (min-width: 700px) {
+      .contact-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .contact-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 14px;
+    }
+    .contact-card h3 { margin: 0 0 6px; font-size: 1rem; color: #ffffff; }
+    .muted { color: #a8b3cf; font-size: .95rem; }
+
+    /* --- POPUP MODAL --- */
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      display: none; justify-content: center; align-items: center;
+    }
+    .modal.active { display: flex; }
+    .card {
+      background: #fff; padding: 30px; border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.08);
+      width: 380px; max-width: min(92vw, 420px); animation: pop .3s ease;
+    }
+    @keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    h1 { margin: 0 0 16px; font-size: 1.25rem; text-align: center; }
+    label { display: block; margin: 12px 0 6px; font-size: .9rem; }
+    input {
+      width: 100%; max-width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+      border-radius: 10px; font-size: 1rem; box-sizing: border-box;
+    }
+    button[type="submit"] {
+      margin-top: 16px; width: 100%; padding: 10px 12px; border: 0; border-radius: 10px;
+      background: #2563eb; color: white; font-weight: 600; cursor: pointer;
+    }
+    .status { margin-top: 12px; font-size: .95rem; text-align: center; }
+    .status.error { color: #b91c1c; }
+    .status.ok { color: #065f46; }
+    .output {
+      margin-top: 12px; padding: 12px; background: #f1f5f9; border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center;
+    }
+    .close-btn { margin-top: 12px; width: 100%; background: #e5e7eb; color: #111; border: 0; border-radius: 10px; padding: 10px; }
+    /* Age modal tweaks (re-use .modal/.card) */
+    #age-modal .status.error { color: #b91c1c; }
+    #age-modal .status.ok { color: #065f46; }
+
+    /* Prevent background scroll while age modal is open */
+    body.age-blocked { overflow: hidden; }

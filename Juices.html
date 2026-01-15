@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Juices - Victoria Vape</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">Victoria Vape</div>
+    <nav>
+      <a href="Victoria Vape Website.html">Home</a>
+      <a href="Disposables.html">Disposables</a>
+      <a href="Devices.html">Devices</a>
+      <a href="Pods.html">Pods</a>
+      <a href="Juices.html" class="active">Juices</a>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <section class="section" id="juices">
+      <h2>Juices</h2>
+      <div class="product-row">
+        <article class="product-card">
+          <img src="images/juices/placeholder-1.png" alt="Juice 1">
+          <div class="product-name">Tropical Blast</div>
+          <div class="price">$19.99</div>
+          <div class="sub">60ml / 3mg</div>
+        </article>
+
+        <article class="product-card">
+          <img src="images/juices/placeholder-2.png" alt="Juice 2">
+          <div class="product-name">Berry Ice</div>
+          <div class="price">$21.99</div>
+          <div class="sub">100ml / 6mg</div>
+        </article>
+
+        <article class="product-card">
+          <img src="images/juices/placeholder-3.png" alt="Juice 3">
+          <div class="product-name">Vanilla Custard</div>
+          <div class="price">$17.99</div>
+          <div class="sub">30ml / Salt Nic</div>
+        </article>
+
+        <article class="product-card">
+          <img src="images/juices/placeholder-4.png" alt="Juice 4">
+          <div class="product-name">Cool Mint</div>
+          <div class="price">$18.99</div>
+          <div class="sub">60ml / Freebase</div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="logo" style="margin-bottom:10px;">Victoria Vape</div>
+      <div class="contact-grid">
+        <div class="contact-card"><h3>Address</h3><div class="muted">202 Victoria Street East, Alliston, ON</div></div>
+        <div class="contact-card"><h3>Contact</h3><div class="muted">Phone: (647) 970-6864<br>Email: victoriavape123@gmail.com</div></div>
+        <div class="contact-card"><h3>Hours</h3><div class="muted">Mon–Fri: 7am–11pm<br>Sat–Sun: 8am–11pm</div></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="login-modal">
+    <div class="card">
+      <h1>Login</h1>
+      <form id="login-form" autocomplete="off" novalidate>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required placeholder="Enter username" />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required placeholder="Enter password" />
+        <button type="submit">Sign in</button>
+        <div id="status" class="status" aria-live="polite"></div>
+      </form>
+      <div id="output" class="output" hidden></div>
+      <button class="close-btn" id="close-login">Close</button>
+    </div>
+  </div>
+
+  <script src="login.js" defer></script>
+</body>
+</html>
