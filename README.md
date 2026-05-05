@@ -19,8 +19,5 @@ I am an aspiring technology professional with a strong foundation in problem-sol
 ## What I Value
 I am motivated by a commitment to protecting both organizations and individuals, upholding legal and ethical standards, and promoting equitable access to secure digital spaces.
 
-## Why Cybersecurity
-My interest spans the entire field of cybersecurity — from technical defense and ethical hacking to policy and compliance. I am particularly drawn to the combination of problem-solving, responsibility, and the real-world impact cybersecurity has on people and organizations.
-
 ## My Goal
 I aim to apply my skills and values to support the evolving security needs of organizations. I am committed to continuous learning and ethical responsibility as I grow in this field.
