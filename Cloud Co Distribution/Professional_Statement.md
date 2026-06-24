@@ -1,0 +1,2 @@
+# Professional Statement
+I’m an aspiring technology professional driven by curiosity, continuous learning, and a commitment to building secure and reliable systems. I apply skills in log analysis, problem diagnosis, Linux, networking fundamentals, and Python development to break down complex technical issues and deliver practical solutions. Whether analyzing system behavior, investigating failures, or improving application design, I focus on understanding how systems work, where they break, and how to make them more robust, secure, and resilient.
