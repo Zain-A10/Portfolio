@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cloud Co Distribution",
+  title: "CloudCore Distribution",
   description: "Premium products delivered across Canada",
 };
 

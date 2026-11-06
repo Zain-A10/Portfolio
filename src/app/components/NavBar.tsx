@@ -64,7 +64,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="text-2xl font-bold tracking-tight">
-          Cloud Co Distribution
+          CloudCore Distribution
         </Link>
 
         <div className="flex items-center gap-6 text-sm font-medium">
