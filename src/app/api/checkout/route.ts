@@ -2,21 +2,55 @@
 import { NextResponse } from "next/server";
 import { stripe } from "../../lib/stripe";
 import { supabase } from "../../lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+export const runtime = "nodejs";
 
 type CartItem = {
   id: number;
+  name?: string;
+  price?: number;
   quantity: number;
 };
 
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  in_stock: boolean;
-};
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
 
 export async function POST(req: Request) {
   try {
+    // 1. Verify the customer's login.
+    const authHeader = req.headers.get("authorization");
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "You must be logged in." },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.slice(7);
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser(token);
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: "Invalid or expired login." },
+        { status: 401 }
+      );
+    }
+
+    // 2. Read the cart from the browser.
     const body = await req.json();
     const cart = body.cart as CartItem[];
 
@@ -27,106 +61,77 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate the cart before querying the database.
-    if (
-      cart.length > 50 ||
-      cart.some(
-        (item) =>
-          !item ||
-          !Number.isSafeInteger(item.id) ||
-          item.id <= 0 ||
-          !Number.isInteger(item.quantity) ||
-          item.quantity < 1 ||
-          item.quantity > 100
-      )
-    ) {
+    if (cart.length > 50) {
       return NextResponse.json(
-        { error: "Invalid cart items or quantities." },
+        { error: "Too many cart items." },
         { status: 400 }
       );
     }
 
-    const authHeader = req.headers.get("authorization");
-    const token = authHeader?.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : null;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "You must be logged in." },
-        { status: 401 }
-      );
-    }
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return NextResponse.json(
-        { error: "Invalid user." },
-        { status: 401 }
-      );
-    }
-
-    // Consolidate duplicate products.
+    // 3. Validate product IDs and quantities.
     const quantities = new Map<number, number>();
 
     for (const item of cart) {
-      const total = (quantities.get(item.id) ?? 0) + item.quantity;
-
-      if (total > 100) {
+      if (
+        !item ||
+        !Number.isSafeInteger(item.id) ||
+        item.id <= 0 ||
+        !Number.isSafeInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > 99
+      ) {
         return NextResponse.json(
-          { error: "Maximum quantity is 100 per product." },
+          { error: "Invalid product or quantity." },
           { status: 400 }
         );
       }
 
-      quantities.set(item.id, total);
+      const newQuantity =
+        (quantities.get(item.id) ?? 0) + item.quantity;
+
+      if (newQuantity > 99) {
+        return NextResponse.json(
+          { error: "Maximum quantity is 99 per product." },
+          { status: 400 }
+        );
+      }
+
+      quantities.set(item.id, newQuantity);
     }
 
-    // Retrieve authoritative product information.
     const productIds = Array.from(quantities.keys());
 
-    const { data, error: productsError } = await supabase
-      .from("products")
-      .select("id, name, price, in_stock")
-      .in("id", productIds);
+    // 4. Retrieve trusted product information.
+    // Never use browser-submitted prices for payment.
+    const { data: products, error: productsError } =
+      await supabaseAdmin
+        .from("products")
+        .select("id, name, price, in_stock")
+        .in("id", productIds);
 
-    if (productsError) {
-      console.error("Product lookup failed:", productsError);
+    if (productsError || !products) {
+      console.error("Product lookup error:", productsError);
 
       return NextResponse.json(
-        { error: "Unable to verify product prices." },
+        { error: "Unable to verify products." },
         { status: 500 }
       );
     }
 
-    const products = (data ?? []) as Product[];
-    const productsById = new Map(
-      products.map((product) => [Number(product.id), product])
-    );
+    if (products.length !== productIds.length) {
+      return NextResponse.json(
+        { error: "One or more products were not found." },
+        { status: 400 }
+      );
+    }
 
-    const verifiedCart: {
-      id: number;
-      name: string;
-      price: number;
-      quantity: number;
-    }[] = [];
-
+    // 5. Build Stripe line items using database prices.
     let subtotalCents = 0;
 
-    for (const [id, quantity] of quantities) {
-      const product = productsById.get(id);
+    const line_items = [];
+    const verifiedCart = [];
 
-      if (!product) {
-        return NextResponse.json(
-          { error: `Product ${id} no longer exists.` },
-          { status: 400 }
-        );
-      }
-
+    for (const product of products) {
       if (!product.in_stock) {
         return NextResponse.json(
           { error: `${product.name} is out of stock.` },
@@ -134,26 +139,38 @@ export async function POST(req: Request) {
         );
       }
 
+      const quantity = quantities.get(product.id)!;
       const price = Number(product.price);
-      const unitAmount = Math.round(price * 100);
+      const priceCents = Math.round(price * 100);
 
       if (
         !Number.isFinite(price) ||
-        price <= 0 ||
-        !Number.isSafeInteger(unitAmount)
+        !Number.isSafeInteger(priceCents) ||
+        priceCents <= 0
       ) {
         return NextResponse.json(
-          { error: "Invalid product price." },
-          { status: 500 }
+          { error: `Invalid price for ${product.name}.` },
+          { status: 400 }
         );
       }
 
-      subtotalCents += unitAmount * quantity;
+      subtotalCents += priceCents * quantity;
+
+      line_items.push({
+        quantity,
+        price_data: {
+          currency: "cad",
+          product_data: {
+            name: product.name,
+          },
+          unit_amount: priceCents,
+        },
+      });
 
       verifiedCart.push({
-        id,
+        id: product.id,
         name: product.name,
-        price: unitAmount / 100,
+        price,
         quantity,
       });
     }
@@ -165,20 +182,11 @@ export async function POST(req: Request) {
       );
     }
 
+    // 6. Calculate Ontario HST (13%).
     const taxCents = Math.round(subtotalCents * 0.13);
 
-    const line_items = [
-      ...verifiedCart.map((item) => ({
-        quantity: item.quantity,
-        price_data: {
-          currency: "cad",
-          product_data: {
-            name: item.name,
-          },
-          unit_amount: Math.round(item.price * 100),
-        },
-      })),
-      {
+    if (taxCents > 0) {
+      line_items.push({
         quantity: 1,
         price_data: {
           currency: "cad",
@@ -187,8 +195,21 @@ export async function POST(req: Request) {
           },
           unit_amount: taxCents,
         },
-      },
-    ];
+      });
+    }
+
+    // 7. Preserve the cart metadata for your webhook.
+    const cartMetadata = JSON.stringify(verifiedCart);
+
+    if (cartMetadata.length > 500) {
+      return NextResponse.json(
+        {
+          error:
+            "Cart is too large. Please remove some items.",
+        },
+        { status: 400 }
+      );
+    }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
@@ -196,16 +217,7 @@ export async function POST(req: Request) {
       throw new Error("NEXT_PUBLIC_SITE_URL is missing.");
     }
 
-    // Stripe metadata values have a 500-character limit.
-    const cartMetadata = JSON.stringify(verifiedCart);
-
-    if (cartMetadata.length > 500) {
-      return NextResponse.json(
-        { error: "Cart is too large. Please use fewer items." },
-        { status: 400 }
-      );
-    }
-
+    // 8. Create the Stripe Checkout session.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
